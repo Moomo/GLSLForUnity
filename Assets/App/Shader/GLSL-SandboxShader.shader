@@ -1,4 +1,4 @@
-Shader "Custom/GLSL Shader"
+Shader "GLSL/SandboxShader"
 {
 	SubShader
 	{
@@ -8,31 +8,35 @@ Shader "Custom/GLSL Shader"
 			//最初のパスは背面のみレンダリング。つまり内側。
 			Cull Off
 
-			//他のオブジェクトをはじかないように深度バッファの書き込みをしない
-			//            ZWrite Off
-
 			//アルファブレンディングを使う
 			Blend SrcAlpha OneMinusSrcAlpha
+			
 			GLSLPROGRAM
 			#include "UnityCG.glslinc"
-			vec4 textureCoordinates;
+			
 			#ifdef VERTEX
-
+            //フラグメントシェーダーに渡すUV
 			varying vec4 uv;
 
 			void main()
 			{
+			    //頂点を設定
 				gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-				// 頂点情報ワールド空間に変換して入れておく
+				//uvを設定
 				uv = gl_MultiTexCoord0;
 			}
 			#endif
 
 			#ifdef FRAGMENT
 
+            //フラグメントシェーダーから渡ってきたUV
 			varying vec4 uv;
+			
+			//解像度
 			vec2 resolution = vec2(_ScreenParams.x, _ScreenParams.y);
+			
 			float time = _Time.y;
+			
 			#define PI 3.14159265359
 			#define T (time / .99)
 
