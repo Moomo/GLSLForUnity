@@ -1,69 +1,71 @@
-﻿Shader "Custom/GLSL Shader"
+Shader "Custom/GLSL Shader"
 {
 	SubShader
 	{
+		Tags { "Queue" = "Transparent" }
 		Pass
 		{
+			//最初のパスは背面のみレンダリング。つまり内側。
+			Cull Off
+
+			//他のオブジェクトをはじかないように深度バッファの書き込みをしない
+			//            ZWrite Off
+
+			//アルファブレンディングを使う
+			Blend SrcAlpha OneMinusSrcAlpha
 			GLSLPROGRAM
 			#include "UnityCG.glslinc"
-			
+			vec4 textureCoordinates;
 			#ifdef VERTEX
-			// バーテックスシェーダーからフラッグメントシェーダーに渡す値を入れる
-	        varying vec4 glVertexWorld;
-	        varying vec3 surfaceNormal;
-				void main()
-				{
-					gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-							// 頂点情報ワールド空間に変換して入れておく
-	        	// glVertexWorld = _Object2World * gl_Vertex;
-				}
+
+			varying vec4 uv;
+
+			void main()
+			{
+				gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+				// 頂点情報ワールド空間に変換して入れておく
+				uv = gl_MultiTexCoord0;
+			}
 			#endif
 
 			#ifdef FRAGMENT
-				// uniform vec4 _ScreenParams;
-				// uniform vec4 _Time;
 
-				vec2 resolution = vec2(_ScreenParams.x, _ScreenParams.y);
-				float time = _Time.x;
+			varying vec4 uv;
+			vec2 resolution = vec2(_ScreenParams.x, _ScreenParams.y);
+			float time = _Time.y;
+			#define PI 3.14159265359
+			#define T (time / .99)
 
-				// ここから
-				const int num_x = 5;
-				const int num_y = 5;
-				float w = resolution.x;
-				float h = resolution.y;
+			vec3 hsv2rgb(vec3 c)
+			{
+				vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 4.0);
+				vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+				return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+			}
 
-				vec4 draw_ball(int i, int j)
+
+			void main()
+			{
+
+				vec2 position = uv.xy * 2 -1 ;
+
+				float color = 1.0;
+				color += sin( position.x * cos( time / 15.0 ) * 80.0 ) + cos( position.y * cos( time / 15.0 ) * 10.0 );
+				color += sin( position.y * sin( time / 10.0 ) * 40.0 ) + cos( position.x * sin( time / 25.0 ) * 40.0 );
+				color += sin( position.x * sin( time / 5.0 ) * 10.0 ) + sin( position.y * sin( time / 35.0 ) * 80.0 );
+				color *= sin( time / 10.0 ) * 0.5;
+
+				vec3 finishColor = vec3( color, color * 0.5, sin( color + time / 3.0 ) * 0.75) ;
+				if(length(finishColor) <= 0.8)
 				{
-					float t = time;
-					float x = w / 2.0 * (1.0 + cos(1.5 * t + float(3 * i + 4 * j)));
-					float y = h / 2.0 * (1.0 + sin(2.3 * t + float(3 * i + 4 * j)));
-					float size = 3.0 - 2.0 * sin(t);
-					vec2 pos = vec2(x, y);
-					float dist = length(gl_FragCoord.xy - pos);
-					float intensity = pow(size / dist, 2.0);
-					vec4 color = vec4(0.0);
-					color.r = 0.5 + cos(t * float(i));
-					color.g = 0.5 + sin(t * float(j));
-					color.b = 0.5 + sin(float(j));
-					return color * intensity;
+					discard;
 				}
-
-				void main()
-				{
-					vec4 color = vec4(0.0);
-					for (int i = 0; i < num_x; ++ i)
-					{
-						for (int j = 0; j < num_y; ++ j)
-						{
-							color += draw_ball(i, j);
-						}
-					}
-					gl_FragColor = color;
-				}
+				gl_FragColor = vec4(finishColor , 1.0 );
+			}
 			#endif
-			
+
 			ENDGLSL
-			
+
 		}
 	}
 }
