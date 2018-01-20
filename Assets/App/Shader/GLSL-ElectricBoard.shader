@@ -9,10 +9,14 @@ Shader "GLSL/ElectricBoard" {
 			_FlickLineWidth("Flick Width",float) = 0.001
 			_FlickLineNum("Flick Line Num",int) =5
 			_FlickLinePitch("Flick Line Pitch",float) =0.01
+			// Inspectorから入力される値
+			_MaterialColor ("Color", Color) = (1,1,1,1)
+			_Sspec ("Specular Color", Color) = (1,1,1,1)
+			_Mgls ("Specular Index", Float) = 5
 		}
 		SubShader {
 			Pass {
-
+				Tags { "LightMode" = "ForwardBase" }
 				//裏も描画
 				Cull Off
 
@@ -35,12 +39,27 @@ Shader "GLSL/ElectricBoard" {
 				uniform float _FlickLineNum;
 				//画面のちらつき線の間隔
 				uniform float _FlickLinePitch;
+				// 入射光の色
+				uniform vec4 _LightColor0;
+				//マテリアルの色
+				uniform vec4 _MaterialColor;
+				//光の色
+				uniform vec4 _Sspec;
+				//フォン係数(鏡面反射指数)
+				uniform float _Mgls;
 				// バーテックスシェーダー
 				#ifdef VERTEX
+				// バーテックスシェーダーからフラッグメントシェーダーに渡す値を入れる
+				varying vec4 glVertexWorld;
+				varying vec3 surfaceNormal;
 				//UV
 				varying vec4 uv;
 				//Main
 				void main() {
+					// 面法線
+					surfaceNormal = normalize((unity_ObjectToWorld * vec4(gl_Normal, 0.0)).xyz);
+					// 頂点情報ワールド空間に変換して入れておく
+					glVertexWorld = unity_ObjectToWorld * gl_Vertex;
 					//UVの取得
 					uv = gl_MultiTexCoord0;
 					// 座標変換
@@ -50,8 +69,31 @@ Shader "GLSL/ElectricBoard" {
 
 				// フラッグメントシェーダー
 				#ifdef FRAGMENT
+				// バーテックスシェーダーからフラッグメントシェーダーに渡す値を入れる
+				varying vec4 glVertexWorld;
+				varying vec3 surfaceNormal;
 				//UV
 				varying vec4 uv;
+
+				//光の計算を返す
+				vec4 lc()
+				{
+					// 鏡面成分
+					// 入射光ベクトル
+					vec3 L = normalize(_WorldSpaceLightPos0.xyz);
+					// 視点方向ベクトル
+					vec3 V = normalize((vec4(_WorldSpaceCameraPos, 1.0) - glVertexWorld).xyz);
+					// Cspec = (V・R)^Mgls * Sspec * Mspec
+					vec3 specularReflection = pow(max(0.0, dot(reflect(-L, surfaceNormal), V)), _Mgls) * _LightColor0.xyz * _Sspec.xyz;
+					// 拡散成分
+					// Cdiff = (N・L)Sdiff * Mdiff
+					vec3 diffuseReflection = max(0.0, dot(surfaceNormal, L)) * _LightColor0.xyz * _MaterialColor.xyz;
+					// 環境成分
+					// Camb = Gamb * Mamb　
+					vec3 ambientLight = gl_LightModel.ambient.xyz * vec3(_MaterialColor);
+					// 色を出力
+					return	vec4(diffuseReflection + specularReflection , 1.0);
+				}
 				//Main
 				void main() {
 					float resolutionX = 1.0/_ResolutionX;
@@ -80,6 +122,8 @@ Shader "GLSL/ElectricBoard" {
 								gl_FragColor += tex;
 							}
 						}
+						//光の情報を乗算
+						gl_FragColor *= lc();
 					}
 				}
 				#endif

@@ -15,12 +15,12 @@ Shader "GLSL/SandboxShader01"
 			#include "UnityCG.glslinc"
 
 			#ifdef VERTEX
-            //フラグメントシェーダーに渡すUV
+			//フラグメントシェーダーに渡すUV
 			varying vec4 uv;
 
 			void main()
 			{
-			    //頂点を設定
+				//頂点を設定
 				gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 				//uvを設定
 				uv = gl_MultiTexCoord0;
@@ -29,24 +29,14 @@ Shader "GLSL/SandboxShader01"
 
 			#ifdef FRAGMENT
 
-            //フラグメントシェーダーから渡ってきたUV
+			//フラグメントシェーダーから渡ってきたUV
 			varying vec4 uv;
 
 			//解像度
 			vec2 resolution = vec2(_ScreenParams.x, _ScreenParams.y);
 
+			//時間
 			float time = _Time.y;
-
-			#define PI 3.14159265359
-			#define T (time / .99)
-
-			vec3 hsv2rgb(vec3 c)
-			{
-				vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 4.0);
-				vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-				return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-			}
-
 
 			void main()
 			{

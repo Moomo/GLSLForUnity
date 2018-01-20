@@ -356,12 +356,12 @@ GameObject:
   - component: {fileID: 2022907130}
   - component: {fileID: 2022907129}
   m_Layer: 0
-  m_Name: Quad
+  m_Name: Texture
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!23 &2022907129
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -376,7 +376,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 74f54b3c5e6514992ac72ac76adc936f, type: 2}
+  - {fileID: 2100000, guid: dc0ad97c07deb41c0ab1f0410c0a8a83, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -424,7 +424,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2022907128}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.88999987, z: -0.009999998}
+  m_LocalPosition: {x: 0, y: 0.88999987, z: 4.62}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
