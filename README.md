@@ -2,7 +2,7 @@
 
 GLSLをUnityで利用したサンプルシーン
 
-#Usage
+# Usage
 
 1. クローンしたフォルダをUnityで開いてください
 1. `Assets/App/Scenes`フォルダ内にシーンが２つあるのでお好きな方を開いてください
