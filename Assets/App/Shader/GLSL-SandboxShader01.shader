@@ -1,4 +1,4 @@
-Shader "GLSL/SandboxShader"
+Shader "GLSL/SandboxShader01"
 {
 	SubShader
 	{
@@ -10,10 +10,10 @@ Shader "GLSL/SandboxShader"
 
 			//アルファブレンディングを使う
 			Blend SrcAlpha OneMinusSrcAlpha
-			
+
 			GLSLPROGRAM
 			#include "UnityCG.glslinc"
-			
+
 			#ifdef VERTEX
             //フラグメントシェーダーに渡すUV
 			varying vec4 uv;
@@ -31,12 +31,12 @@ Shader "GLSL/SandboxShader"
 
             //フラグメントシェーダーから渡ってきたUV
 			varying vec4 uv;
-			
+
 			//解像度
 			vec2 resolution = vec2(_ScreenParams.x, _ScreenParams.y);
-			
+
 			float time = _Time.y;
-			
+
 			#define PI 3.14159265359
 			#define T (time / .99)
 

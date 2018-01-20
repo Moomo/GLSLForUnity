@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: GLSLSandboxMaterial
-  m_Shader: {fileID: 4800000, guid: 330dfcd55bef443099f5c96a264f54f5, type: 3}
+  m_Name: GLSLSandbox02Material
+  m_Shader: {fileID: 4800000, guid: 2ec989512fafa43a99c887197a65e73f, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
